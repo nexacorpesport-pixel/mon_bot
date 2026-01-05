@@ -114,9 +114,15 @@
     </header>
 
     <div id="quiz">
+      <div id="start">
+        <input id="username" placeholder="Ton pseudo Discord" style="width:100%;padding:14px;border-radius:12px;border:none;background:#1b1b25;color:white;font-size:1rem;margin-bottom:16px;" />
+        <button id="startBtn" style="width:100%;padding:14px;border-radius:12px;border:none;background:white;color:black;font-weight:700;font-size:1rem;cursor:pointer;">Commencer le QCM</button>
+      </div>
+      <div id="quizContent" style="display:none">
       <div class="question" id="question"></div>
       <div class="answers" id="answers"></div>
       <div class="progress" id="progress"></div>
+          </div>
     </div>
   </div>
 
@@ -329,6 +335,8 @@
     let index = 0;
     let score = 0;
 
+    let username = "";
+
     const qEl = document.getElementById("question");
     const aEl = document.getElementById("answers");
     const pEl = document.getElementById("progress");
@@ -338,10 +346,37 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          embeds: [
+            {
+              title: "🛡️ QCM Mod Discord – Résultat",
+              color: 16777215,
+              fields: [
+                { name: "Pseudo", value: username, inline: true },
+                { name: "Score", value: `${result.score}/${questions.length}`, inline: true },
+                { name: "Date", value: new Date().toLocaleString("fr-FR"), inline: false }
+              ]
+            }
+          ]
+        })
+      }).catch(() => {});
+    }(result) {
+      fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
           content: `🛡️ **QCM Mod Discord**\nRésultat : **${result.score}/${questions.length}**`
         })
       }).catch(() => {});
     }
+
+    document.getElementById("startBtn").onclick = () => {
+      const input = document.getElementById("username");
+      if (!input.value.trim()) return alert("Entre un pseudo valide");
+      username = input.value.trim();
+      document.getElementById("start").style.display = "none";
+      document.getElementById("quizContent").style.display = "block";
+      loadQuestion();
+    };
 
     function loadQuestion() {
       const current = questions[index];
