@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>QCM Mod Discord – Niveau assez dur</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0b0f;
+      --card: #14141b;
+      --accent: #ffffff;
+      --muted: #9aa0a6;
+      --danger: #ff4d4d;
+      --ok: #3cff8f;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: radial-gradient(circle at top, #111 0%, #000 60%);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 720px;
+      background: var(--card);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 30px 80px rgba(0,0,0,.6);
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    header img {
+      width: 96px;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      margin: 0 0 8px;
+      font-weight: 800;
+    }
+
+    .meta {
+      font-size: .9rem;
+      color: var(--muted);
+    }
+
+    .question {
+      font-size: 1.25rem;
+      margin-bottom: 24px;
+      font-weight: 600;
+    }
+
+    .answers {
+      display: grid;
+      gap: 12px;
+    }
+
+    button.answer {
+      background: #1b1b25;
+      color: white;
+      border: 1px solid #2a2a35;
+      padding: 14px 16px;
+      border-radius: 12px;
+      font-size: 1rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all .15s ease;
+    }
+
+    button.answer:hover {
+      background: #232330;
+      border-color: #3a3a4a;
+    }
+
+    button.answer.correct {
+      border-color: var(--ok);
+      background: rgba(60,255,143,.15);
+    }
+
+    button.answer.wrong {
+      border-color: var(--danger);
+      background: rgba(255,77,77,.15);
+    }
+
+    .progress {
+      margin-top: 24px;
+      font-size: .85rem;
+      color: var(--muted);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <img src="logo.png" alt="Logo" />
+      <h1>QCM MOD DISCORD</h1>
+      <div class="meta">Niveau assez dur • 1 bonne réponse</div>
+    </header>
+
+    <div id="quiz">
+      <div class="question" id="question"></div>
+      <div class="answers" id="answers"></div>
+      <div class="progress" id="progress"></div>
+    </div>
+  </div>
+
+  <script>
+    const WEBHOOK_URL = "https://discord.com/api/webhooks/1455347433834938420/V_ZkW9bIX6PuGnZNsktGcCKFgFM0xm1knfY7WwSS5caIdd2E6cSDRiFeTvj-UTCYBWsJ";
+
+    const questions = [
+  {
+    q: "Un RAID commence avec spam massif. C’est quoi la vraie priorité ?",
+    answers: [
+      "Bannir le premier qui parle",
+      "Répondre pour calmer",
+      "Couper la propagation (lock / slowmode)",
+      "Faire une annonce"
+    ],
+    correct: 2
+  },
+  {
+    q: "Pourquoi bannir trop vite pendant un RAID peut être dangereux ?",
+    answers: [
+      "Ça prend trop de temps",
+      "Tu peux bannir des innocents et empirer la situation",
+      "Discord aime pas ça",
+      "Les bots font mieux"
+    ],
+    correct: 1
+  },
+  {
+    q: "Un RAID peut être silencieux. Ça veut dire quoi ?",
+    answers: [
+      "Pas grave",
+      "Des bots muets",
+      "Provocations lentes pour piéger le staff",
+      "Juste des nouveaux membres"
+    ],
+    correct: 2
+  },
+  {
+    q: "T’es seul en ligne, bots brisés, RAID en cours. Tu fais quoi ?",
+    answers: [
+      "Tu attends",
+      "Tu paniques",
+      "Tu lock et tu ping le staff",
+      "Tu quittes Discord"
+    ],
+    correct: 2
+  },
+  {
+    q: "C’est quoi l’erreur que les raideurs veulent provoquer ?",
+    answers: [
+      "Un message drôle",
+      "Une réaction staff abusive ou visible",
+      "Un bug",
+      "Un mute trop long"
+    ],
+    correct: 1
+  },
+  {
+    q: "Du porno est posté puis supprimé vite. Pourquoi c’est encore grave ?",
+    answers: [
+      "Parce que c’est gênant",
+      "Parce que des gens ont pu le voir, incluant des mineurs",
+      "Parce que ça salit le chat",
+      "Parce que Discord lag"
+    ],
+    correct: 1
+  },
+  {
+    q: "Pourquoi le porno est souvent utilisé en RAID ?",
+    answers: [
+      "Pour faire rire",
+      "Pour troller",
+      "Pour choquer et provoquer des signalements",
+      "Parce que c’est facile"
+    ],
+    correct: 2
+  },
+  {
+    q: "Un lien porno, c’est moins grave qu’une image ?",
+    answers: [
+      "Oui",
+      "Des fois",
+      "Non, c’est la même chose",
+      "Seulement en public"
+    ],
+    correct: 2
+  },
+  {
+    q: "Un salon 18+ est mal configuré. Du porno est posté. Qui est responsable ?",
+    answers: [
+      "Juste l’utilisateur",
+      "Juste le staff",
+      "Les deux",
+      "Personne"
+    ],
+    correct: 2
+  },
+  {
+    q: "À partir de quand le porno devient un risque légal ?",
+    answers: [
+      "Quand ça dure longtemps",
+      "Quand des mineurs peuvent être exposés",
+      "Quand c’est signalé",
+      "Quand ça dérange"
+    ],
+    correct: 1
+  },
+  {
+    q: "Quelqu’un poste une adresse complète. Ta première action ?",
+    answers: [
+      "Screenshot",
+      "Ban",
+      "Supprimer immédiatement",
+      "Répondre"
+    ],
+    correct: 2
+  },
+  {
+    q: "Pourquoi une info déjà publique reste interdite à reposter ?",
+    answers: [
+      "Parce que c’est impoli",
+      "Parce que la rediffusion ciblée met en danger",
+      "Parce que Discord n’aime pas",
+      "Parce que ça fait du drama"
+    ],
+    correct: 1
+  },
+  {
+    q: "Un mod reçoit une info perso en DM pour aider. Il devrait :",
+    answers: [
+      "La lire",
+      "La garder",
+      "Refuser et supprimer",
+      "La transmettre"
+    ],
+    correct: 2
+  },
+  {
+    q: "Pourquoi garder une info perso au cas où est une faute ?",
+    answers: [
+      "C’est inutile",
+      "Ça rend le mod responsable en cas de fuite",
+      "Ça prend de la place",
+      "C’est contre les bots"
+    ],
+    correct: 1
+  },
+  {
+    q: "Prendre un screenshot d’un dox comme preuve, c’est :",
+    answers: [
+      "Une bonne pratique",
+      "Neutre",
+      "Aggraver la situation",
+      "Obligatoire"
+    ],
+    correct: 2
+  },
+  {
+    q: "En plein RAID, quelqu’un poste porno + adresse. Tu fais quoi en premier ?",
+    answers: [
+      "Bannir",
+      "Répondre",
+      "Supprimer l’info dangereuse",
+      "Faire une annonce"
+    ],
+    correct: 2
+  },
+  {
+    q: "Pourquoi la suppression passe avant la sanction ?",
+    answers: [
+      "Parce que c’est plus rapide",
+      "Parce que ça coupe le danger immédiat",
+      "Parce que c’est plus poli",
+      "Parce que Discord le demande"
+    ],
+    correct: 1
+  },
+  {
+    q: "La victime d’un dox panique et demande n’importe quoi. Tu fais quoi ?",
+    answers: [
+      "Tu obéis",
+      "Tu ignores",
+      "Tu restes calme et tu agis de façon sécuritaire",
+      "Tu la bannis"
+    ],
+    correct: 2
+  },
+  {
+    q: "Qu’est-ce qui passe avant l’image du serveur ?",
+    answers: [
+      "Les stats",
+      "Les admins",
+      "La sécurité d’une personne",
+      "Les règles écrites"
+    ],
+    correct: 2
+  },
+  {
+    q: "Un bon mod, en situation grave, doit accepter que :",
+    answers: [
+      "Il a toujours raison",
+      "Le serveur est prioritaire",
+      "Une erreur peut avoir des conséquences réelles",
+      "Les bots vont gérer"
+    ],
+    correct: 2
+  }
+];
+
+    let index = 0;
+    let score = 0;
+
+    const qEl = document.getElementById("question");
+    const aEl = document.getElementById("answers");
+    const pEl = document.getElementById("progress");
+
+    function sendWebhook(result) {
+      fetch(WEBHOOK_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          content: `🛡️ **QCM Mod Discord**\nRésultat : **${result.score}/${questions.length}**`
+        })
+      }).catch(() => {});
+    }
+
+    function loadQuestion() {
+      const current = questions[index];
+      qEl.textContent = current.q;
+      aEl.innerHTML = "";
+      pEl.textContent = `Question ${index + 1} / ${questions.length}`;
+
+      current.answers.forEach((txt, i) => {
+        const btn = document.createElement("button");
+        btn.className = "answer";
+        btn.textContent = txt;
+        btn.onclick = () => selectAnswer(btn, i);
+        aEl.appendChild(btn);
+      });
+    }
+
+    function selectAnswer(btn, i) {
+      const correct = questions[index].correct;
+      const buttons = document.querySelectorAll(".answer");
+
+      buttons.forEach(b => b.disabled = true);
+
+      if (i === correct) {
+        btn.classList.add("correct");
+        score++;
+      } else {
+        btn.classList.add("wrong");
+        buttons[correct].classList.add("correct");
+      }
+
+      setTimeout(() => {
+        index++;
+        if (index < questions.length) {
+          loadQuestion();
+        } else {
+          finish();
+        }
+      }, 1200);
+    }
+
+    function finish() {
+      qEl.textContent = "QCM terminé.";
+      aEl.innerHTML = `<div style="text-align:center;font-size:1.2rem">Score : <strong>${score}/${questions.length}</strong></div>`;
+      pEl.textContent = "";
+      sendWebhook({ score });
+    }
+
+    loadQuestion();
+  </script>
+</body>
+</html>
